@@ -1,0 +1,52 @@
+# فعال‌سازی موتور بازنویسی
+RewriteEngine On
+RewriteBase /
+
+# ریدایرکت همه درخواست‌ها به کنترلر اصلی (MVC)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.+)$ mvc/index.php [QSA,L]
+
+# جلوگیری از دسترسی مستقیم به پوشه‌های حساس
+RewriteCond %{THE_REQUEST} /(application|system|view)/ [NC]
+RewriteRule ^ - [R=403,L]
+
+# تنظیم فایل‌های پیش‌فرض
+DirectoryIndex file.php file.htm
+
+# جلوگیری از لیست شدن فایل‌ها در مرورگر
+Options -Indexes
+
+# محدود کردن دسترسی بر اساس IP
+# فقط این IP اجازه دارد:
+# allow from 1.2.3.4
+# یا همه را بلاک کن:
+# deny from all
+
+# بلاک کردن دسترسی به فایل‌های خاص
+<Files wp-config.php>
+  Order allow,deny
+  Deny from all
+</Files>
+
+# اجبار به دانلود فایل‌ها به جای نمایش در مرورگر
+AddType application/octet-stream .pdf
+AddType application/octet-stream .zip
+AddType application/octet-stream .mov
+
+# تنظیمات PHP
+php_value upload_max_filesize 20M
+php_value memory_limit 128M
+
+# ریدایرکت از HTTP به HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ریدایرکت به نسخه www دامنه
+RewriteCond %{HTTP_HOST} !^www.example.com$ [NC]
+RewriteRule ^(.*)$ http://www.example.com/$1 [L,R=301]
+
+# صفحات خطا سفارشی
+ErrorDocument 401 /error_pages/401.html
+ErrorDocument 404 /error_pages/404.html
+ErrorDocument 500 /error_pages/500.html
