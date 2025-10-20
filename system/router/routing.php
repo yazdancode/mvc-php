@@ -11,5 +11,32 @@ class Routing
         global $current_route;
         $this->current_route = explode('/', $current_route);
     }
-    
+
+    public function run(): void
+    {
+    $controller = basename($this->current_route[0]);
+    $path = realpath(dirname(__FILE__) . "/../../application/controllers/" . $controller . ".php");
+
+    if (!file_exists($path)) {
+        echo "404 - file not exists!";
+        exit;
+    }
+    require_once $path;
+    $method = sizeof($this->current_route) === 1 ? "index" : $this->current_route[1];
+    $class = "Application\\Controllers\\" . $controller;
+
+    if (!class_exists($class)) {
+        echo "404 - class not found!";
+        exit;
+    }
+    $instance = new $class();
+    if (!method_exists($instance, $method)) {
+        echo "404 - method not found!";
+        exit;
+    }
+    $instance->$method();
+    }
 }
+
+
+?>
