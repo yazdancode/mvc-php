@@ -9,5 +9,10 @@
     <h1>
         this is a view
     </h1>
+    <p>
+        <?php
+        echo $productname;
+        ?>
+    </p>
 </body>
 </html>

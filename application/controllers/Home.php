@@ -5,7 +5,8 @@ class Home extends Controller
 {
     public function index(): void
     {
-        $this->view('app.index');
+        $productname = "phone";
+        $this->view('app.index', compact('productname'));
     }
 
     public function create(): void
