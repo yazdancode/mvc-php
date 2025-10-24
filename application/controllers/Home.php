@@ -11,7 +11,7 @@ class Home extends Controller
 
     public function create(): void
     {
-        $this->view('app.create');
+        $this->redirect('Home');
     }
 
 }
