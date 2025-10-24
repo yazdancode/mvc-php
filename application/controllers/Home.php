@@ -1,11 +1,16 @@
 <?php 
 namespace Application\Controllers;
 
-class Home
+class Home extends Controller
 {
     public function index(): void
     {
-        echo 'hi';
+        $this->view('app.index');
+    }
+
+    public function create(): void
+    {
+        $this->view('app.create');
     }
 
 }

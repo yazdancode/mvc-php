@@ -1,60 +1,53 @@
 <?php
-
 namespace System\Router;
 
-use ReflectionException;
 use ReflectionMethod;
+use System\Traits\View;
 
-class Routing
-{
-    private array $currentRoute;
+class Routing {
 
-    public function __construct(string $route)
-    {
-        $route = trim($route, '/');
-        $this->currentRoute = explode('/', $route);
+    private $currentRoute;
+
+    public function __construct() {
+        global $current_route;
+        $this->currentRoute = explode('/', $current_route);
     }
 
-    public function run(): void
-    {
-        $controller = ucfirst(basename($this->currentRoute[0] ?? 'Home'));
-        $controllerFile = dirname(__DIR__, 2) . "/application/controllers/$controller.php";
+    public function run() {
+        $controllerFile = realpath(dirname(__FILE__) . "/../../application/controllers/" . $this->currentRoute[0] . ".php");
+
         if (!file_exists($controllerFile)) {
-            http_response_code(404);
-            echo "404 - Controller file not found!";
-            return;
+            #todo: redirect to file 404.php
+            echo "404 - فایل کنترلر موجود نیست!";
+            exit;
         }
 
-        require_once $controllerFile;
+        require_once($controllerFile);
+        $method = (sizeof($this->currentRoute) == 1) ? "index" : $this->currentRoute[1];
+        $class = "Application\\Controllers\\" . $this->currentRoute[0];
 
-        $className = "Application\\Controllers\\$controller";
-        if (!class_exists($className)) {
-            http_response_code(404);
-            echo "404 - Controller class not found!";
-            return;
-        }
-
-        $object = new $className();
-        $method = $this->currentRoute[1] ?? 'index';
-        if (!method_exists($object, $method)) {
-            http_response_code(404);
-            echo "404 - Method not found!";
-            return;
+        if (!class_exists($class)) {
+            #todo: redirect to file 404.php
+            echo "404 - کلاس کنترلر موجود نیست!";
+            exit;
         }
 
-        try {
-            $reflection = new ReflectionMethod($className, $method);
-        } catch (ReflectionException $e) {
-            http_response_code(500);
-            echo "500 - Reflection error!";
-            return;
+        $object = new $class();
+
+        if (method_exists($object, $method)) {
+            $reflection = new ReflectionMethod($class, $method);
+            $parameterCount = $reflection->getNumberOfParameters();
+            $passedParams = array_slice($this->currentRoute, 2);
+
+            if ($parameterCount <= count($passedParams)) {
+                call_user_func_array([$object, $method], $passedParams);
+            } else {
+                #todo: redirect to file 404.php
+                echo "404 - تعداد پارامترها نادرست است!";
+            }
+        } else {
+            #todo: redirect to file 404.php
+            echo "404 - متد موجود نیست!";
         }
-        $params = array_slice($this->currentRoute, 2);
-        if (count($params) < $reflection->getNumberOfRequiredParameters()) {
-            http_response_code(400);
-            echo "400 - Missing required parameters!";
-            return;
-        }
-        call_user_func_array([$object, $method], $params);
     }
 }
