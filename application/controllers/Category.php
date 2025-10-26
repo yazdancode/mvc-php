@@ -4,7 +4,7 @@ namespace Application\Controllers;
 
 class Category extends Controller
 {
-    public function index()
+    public function index():void
     {
 
     }
@@ -24,17 +24,17 @@ class Category extends Controller
 
     }
 
-    public function edit($id)
+    public function edit($id):void
     {
 
     }
 
-    public function update($id)
+    public function update($id):void
     {
 
     }
 
-    public function destroy($id)
+    public function destroy($id):void
     {
 
     }
