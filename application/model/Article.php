@@ -1,7 +1,6 @@
 <?php 
 
 namespace Application\Model;
-
 use PDOException;
 
 class Article extends Model
@@ -55,5 +54,4 @@ class Article extends Model
         $this->execute($query, [$id]);
         $this->closeConnection();
     }
-
 }
