@@ -9,7 +9,7 @@ class Model
 {
     protected ?PDO $connection = null;
 
-    public function __construct(string $dbHost, string $dbName, string $dbUsername, string $dbPassword)
+    public function __construct(string $dbHost=null, string $dbName=null, string $dbUsername=null, string $dbPassword=null)
     {
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
