@@ -1,4 +1,4 @@
-<?php include '../panel_header.php'; ?>
+<?php $this->include("panel.layouts.header")  ?>
 
 <section class="mb-2 d-flex justify-content-between align-items-center">
     <h2 class="h4">Articles</h2>
@@ -41,4 +41,4 @@
     </table>
 </section>
 
-<?php include '../panel_footer.php'; ?>
+<?php $this->include("panel.layouts.footer"); ?>

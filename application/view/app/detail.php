@@ -1,5 +1,4 @@
-<?php include 'header.php'; ?>
-
+<?php $this->include("app.layouts.header")  ?>
 <section class="container my-5">
     <section class="row">
         <section class="col-md-12">
@@ -17,5 +16,4 @@
         </section>
     </section>
 </section>
-
-<?php include 'footer.php'; ?>
+<?php $this->include("app.layouts.footer"); ?>

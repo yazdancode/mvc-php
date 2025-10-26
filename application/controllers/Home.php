@@ -3,15 +3,18 @@ namespace Application\Controllers;
 
 class Home extends Controller
 {
-    public function index(): void
+    public function category($id): void
     {
-        $productname = "phone";
-        $this->view('app.index', compact('productname'));
+        $this->view('app.category');
     }
 
-    public function create(): void
+    public function show($id): void
     {
-        $this->redirect('Home');
+        $this->view('app.detail');
     }
 
+    public function index():void
+    {
+        $this->view('app.index');
+    }
 }
