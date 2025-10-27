@@ -1,9 +1,9 @@
-</section> <!-- .col-md-10 -->
-</section> <!-- .row -->
-</section> <!-- .container-fluid -->
-</section> <!-- #app -->
+</section>
+</section>
+</section>
+</section>
 
-<script src="../../js/jquery.min.js"></script>
-<script src="../../js/bootstrap.min.js"></script>
+<script src="<?php $this->asset('js/jquery.min.js'); ?>"></script>
+<script src="<?php $this->asset('js/bootstrap.min.js');?>"></script>
 </body>
 </html>

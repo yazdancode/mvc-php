@@ -1,8 +1,11 @@
 <?php 
 namespace System\Traits;
 
+use JetBrains\PhpStorm\NoReturn;
+
 trait Redirect
 {
+    #[NoReturn]
     protected function redirect($url):void
     {
         $protocol = stripos($_SERVER['SERVER_PROTOCOL'], 'https') !== false ? 'https://' : 'http://';

@@ -1,12 +1,13 @@
 <?php
 namespace System\Router;
 
+use JetBrains\PhpStorm\NoReturn;
 use ReflectionException;
 use ReflectionMethod;
 
 class Routing
 {
-    private $currentRoute;
+    private array $currentRoute;
 
     public function __construct()
     {
@@ -25,7 +26,6 @@ class Routing
 
         if (!file_exists($controllerFile)) {
             $this->abort404("کنترلر یافت نشد.");
-            exit;
         }
 
         require_once $controllerFile;
@@ -34,32 +34,29 @@ class Routing
 
         if (!class_exists($class)) {
             $this->abort404("کلاس کنترلر موجود نیست");
-            exit;
         }
 
         $object = new $class();
 
         if (!method_exists($object, $method)) {
             $this->abort404("متد موجود نیست");
-            exit;
         }
 
         try {
             $reflection = new ReflectionMethod($class, $method);
         } catch (ReflectionException $e) {
             $this->abort404("خطا در بازتاب متد: " . $e->getMessage());
-            exit;
         }
 
         $passedParams = array_slice($this->currentRoute, 2);
         $paramCount = $reflection->getNumberOfParameters();
         if (count($passedParams) > $paramCount) {
             $this->abort404("تعداد پارامترهای ارسالی بیش از حد مجاز است.");
-            exit;
         }
         call_user_func_array([$object, $method], $passedParams);
     }
 
+    #[NoReturn]
     private function abort404(string $message = ''): void
     {
         http_response_code(404);

@@ -9,23 +9,28 @@ class Model
 {
     protected ?PDO $connection = null;
 
-    public function __construct(string $dbHost=null, string $dbName=null, string $dbUsername=null, string $dbPassword=null)
+    public function __construct()
     {
-        $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
-        ];
+        if ($this->connection === null) {
+            global $dbHost, $dbName, $dbUsername, $dbPassword;
 
-        try {
-            $this->connection = new PDO(
-                "mysql:host=$dbHost;dbname=$dbName",
-                $dbUsername,
-                $dbPassword,
-                $options
-            );
-        } catch (PDOException $e) {
-            die("Database connection failed: " . $e->getMessage());
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"
+            ];
+
+            try {
+                $this->connection = new PDO(
+                    "mysql:host={$dbHost};dbname={$dbName}",
+                    $dbUsername,
+                    $dbPassword,
+                    $options
+                );
+            } catch (PDOException $e) {
+                error_log("Database connection error: " . $e->getMessage());
+                echo "Database connection failed.";
+            }
         }
     }
 
@@ -34,38 +39,40 @@ class Model
         $this->closeConnection();
     }
 
-    protected function query(string $query, array $values = null): ?PDOStatement
+    /**
+     * Execute a SELECT query and return results.
+     */
+    protected function query(string $query, array $values = []): ?PDOStatement
     {
         try {
-            if ($values === null) {
-                return null;
-            }
-
             $stmt = $this->connection->prepare($query);
             $stmt->execute($values);
-            return null;
+            return $stmt;
         } catch (PDOException $e) {
-            echo "Query error: " . $e->getMessage();
+            error_log("Query error: " . $e->getMessage());
+            echo "Query execution failed.";
             return null;
         }
     }
 
-    protected function execute(string $query, array $values = null): bool
+    /**
+     * Execute an INSERT, UPDATE, or DELETE query.
+     */
+    protected function execute(string $query, array $values = []): bool
     {
         try {
-            if ($values === null) {
-                $this->connection->exec($query);
-            } else {
-                $stmt = $this->connection->prepare($query);
-                $stmt->execute($values);
-            }
-            return true;
+            $stmt = $this->connection->prepare($query);
+            return $stmt->execute($values);
         } catch (PDOException $e) {
-            echo "Execution error: " . $e->getMessage();
+            error_log("Execution error: " . $e->getMessage());
+            echo "Query execution failed.";
             return false;
         }
     }
 
+    /**
+     * Close the database connection.
+     */
     protected function closeConnection(): void
     {
         $this->connection = null;
