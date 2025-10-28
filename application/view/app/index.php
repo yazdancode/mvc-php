@@ -7,9 +7,9 @@
                     <p><?= htmlspecialchars(substr($article['body'], 0, 120), ENT_QUOTES, 'UTF-8') ?>...</p>
                     <p>
                         <a class="btn btn-primary"
-                           href="<?= $this->url('home/show/' . (int)$article['id']) ?>"
-                           role="button">
-                            View details »
+                            href="<?= $this->url('home/show/' . (int)$article['id']) ?>"
+                            role="button">
+                            View details
                         </a>
                     </p>
                 </div>
