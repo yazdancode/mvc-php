@@ -25,7 +25,7 @@ class Category extends Model
         $query = "SELECT * FROM `categories` WHERE `cat_id` = ?;";
         try {
             $stmt = $this->query($query, [$cat_id]);
-            $result = $stmt ? $stmt->fetch() : [];
+            $result = $stmt ? $stmt->fetchAll() : [];
         } catch (PDOException $e){
             error_log("Error fetching articles for category $cat_id: " . $e->getMessage());
             $result = [];
