@@ -22,7 +22,7 @@ class Home extends Controller
         $category = $categoryModel->find($id);
         $articles = $categoryModel->articles($id);
 
-        $this->view('app.index', compact('categories', 'articles', 'category'));
+        $this->view('app.category', compact('categories', 'articles', 'category'));
     }
 
     public function show($id): void
@@ -30,6 +30,6 @@ class Home extends Controller
         $categories = (new Category())->all();
         $article = (new Article())->find($id);
 
-        $this->view('app.index', compact('categories', 'article'));
+        $this->view('app.show', compact('categories', 'article'));
     }
 }
