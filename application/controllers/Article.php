@@ -1,57 +1,114 @@
 <?php
+
 namespace Application\Controllers;
 
 use Application\Model\Article as ArticleModel;
 use Application\Model\Category;
-use JetBrains\PhpStorm\NoReturn;
 
 class Article extends Controller
 {
     public function index(): void
     {
-        $articleModel = new ArticleModel();
-        $articles = $articleModel->all();
+        $articles = (new ArticleModel())->all();
         $this->view('panel.article.index', compact('articles'));
     }
 
     public function create(): void
     {
-        $categoryModel = new Category();
-        $categories = $categoryModel->all();
+        $categories = (new Category())->all();
         $this->view('panel.article.create', compact('categories'));
     }
 
-    #[NoReturn]
     public function store(): void
     {
-        $articleModel = new ArticleModel();
-        $articleModel->insert($_POST);
+        $title = trim($_POST['title'] ?? '');
+        $cat_id = trim($_POST['cat_id'] ?? '');
+        $body = trim($_POST['body'] ?? '');
+
+        $errors = $this->validate($title, $cat_id, $body);
+
+        if (!empty($errors)) {
+            $categories = (new Category())->all();
+            $this->view('panel.article.create', [
+                'categories' => $categories,
+                'errors' => $errors,
+                'old' => $_POST
+            ]);
+            return;
+        }
+
+        (new ArticleModel())->insert([
+            'title' => $title,
+            'cat_id' => (int)$cat_id,
+            'body' => $body
+        ]);
+
         $this->redirect('article');
     }
 
     public function edit($id): void
     {
-        $categoryModel = new Category();
-        $categories = $categoryModel->all();
+        $categories = (new Category())->all();
+        $article = (new ArticleModel())->find($id);
 
-        $articleModel = new ArticleModel();
-        $article = $articleModel->find($id);
+        if (!$article) {
+            $this->redirect('article');
+        }
 
         $this->view('panel.article.edit', compact('categories', 'article'));
     }
 
-    #[NoReturn]
     public function update($id): void
     {
-        $articleModel = new ArticleModel();
-        $articleModel->update($id, $_POST);
+        $title = trim($_POST['title'] ?? '');
+        $cat_id = trim($_POST['cat_id'] ?? '');
+        $body = trim($_POST['body'] ?? '');
+
+        $errors = $this->validate($title, $cat_id, $body);
+
+        if (!empty($errors)) {
+            $categories = (new Category())->all();
+            $article = (new ArticleModel())->find($id);
+            $this->view('panel.article.edit', [
+                'categories' => $categories,
+                'article' => $article,
+                'errors' => $errors,
+                'old' => $_POST
+            ]);
+            return;
+        }
+
+        (new ArticleModel())->update($id, [
+            'title' => $title,
+            'cat_id' => (int)$cat_id,
+            'body' => $body
+        ]);
+
         $this->redirect('article');
     }
 
     public function destroy($id): void
     {
-        $articleModel = new ArticleModel();
-        $articleModel->delete($id);
+        (new ArticleModel())->delete($id);
         $this->back();
+    }
+
+    private function validate(string $title, string $cat_id, string $body): array
+    {
+        $errors = [];
+
+        if (empty($title)) {
+            $errors[] = 'عنوان مقاله الزامی است.';
+        }
+
+        if (empty($cat_id) || !is_numeric($cat_id)) {
+            $errors[] = 'لطفاً یک دسته‌بندی معتبر انتخاب کنید.';
+        }
+
+        if (empty($body)) {
+            $errors[] = 'متن مقاله نمی‌تواند خالی باشد.';
+        }
+
+        return $errors;
     }
 }

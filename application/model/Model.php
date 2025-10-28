@@ -22,7 +22,7 @@ class Model
 
             try {
                 $this->connection = new PDO(
-                    "mysql:host={$dbHost};dbname={$dbName}",
+                    "mysql:host=$dbHost;dbname=$dbName",
                     $dbUsername,
                     $dbPassword,
                     $options
@@ -61,8 +61,7 @@ class Model
     protected function execute(string $query, array $values = []): bool
     {
         try {
-            $stmt = $this->connection->prepare($query);
-            return $stmt->execute($values);
+            return $this->connection->prepare($query)->execute($values);
         } catch (PDOException $e) {
             error_log("Execution error: " . $e->getMessage());
             echo "Query execution failed.";

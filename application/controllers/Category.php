@@ -1,59 +1,111 @@
 <?php
 
 namespace Application\Controllers;
+
 use Application\Model\Category as CategoryModel;
-use JetBrains\PhpStorm\NoReturn;
 
 class Category extends Controller
 {
-    public function index():void
+    public function index(): void
     {
-        $category = new CategoryModel();
-        $categories = $category->all();
+        $categories = (new CategoryModel())->all();
         $this->view('panel.category.index', compact('categories'));
     }
- 
+
     public function create(): void
     {
         $this->view('panel.category.create');
     }
 
-    #[NoReturn]
     public function store(): void
     {
-        $category = new CategoryModel();
-        $category->insert($_POST);
+        $input = $this->validateInput($_POST);
+
+        if (!empty($input['errors'])) {
+            $this->view('panel.category.create', [
+                'errors' => $input['errors'],
+                'old' => $_POST
+            ]);
+            return;
+        }
+
+        (new CategoryModel())->insert([
+            'name' => $input['name'],
+            'description' => $input['description']
+        ]);
+
         $this->redirect('category');
     }
 
     public function show(): void
     {
         $this->view('panel.category.show');
-
     }
 
-    public function edit($id):void
+    public function edit($id): void
     {
-        $ob_category = new CategoryModel();
-        $category = $ob_category->find($id);
+        $category = (new CategoryModel())->find($id);
+
+        if (!$category) {
+            $this->redirect('category');
+        }
+
         $this->view('panel.category.edit', compact('category'));
     }
 
-    #[NoReturn]
-    public function update($id):void
+    public function update($id): void
     {
-        $category = new CategoryModel();
-        $category->update($id, $_POST);
+        $category = (new CategoryModel())->find($id);
+        if (!$category) {
+            $this->redirect('category');
+        }
+
+        $input = $this->validateInput($_POST);
+
+        if (!empty($input['errors'])) {
+            $this->view('panel.category.edit', [
+                'category' => $category,
+                'errors' => $input['errors'],
+                'old' => $_POST
+            ]);
+            return;
+        }
+
+        (new CategoryModel())->update($id, [
+            'name' => $input['name'],
+            'description' => $input['description']
+        ]);
+
         $this->redirect('category');
-
     }
 
-    public function destroy($id):void
+    public function destroy($id): void
     {
-        $category = new CategoryModel();
-        $category->delete($id);
+        (new CategoryModel())->delete($id);
         $this->back();
-
     }
-    
+
+    /**
+     * اعتبارسنجی و پاک‌سازی ورودی‌های فرم دسته‌بندی
+     */
+    private function validateInput(array $data): array
+    {
+        $name = trim($data['name'] ?? '');
+        $description = trim($data['description'] ?? '');
+        $errors = [];
+
+        if (empty($name)) {
+            $errors[] = 'نام دسته‌بندی الزامی است.';
+        }
+
+        if (empty($description)) {
+            $errors[] = 'توضیحات دسته‌بندی نمی‌تواند خالی باشد.';
+        }
+
+        return [
+            'name' => $name,
+            'description' => $description,
+            'errors' => $errors
+        ];
+    }
 }

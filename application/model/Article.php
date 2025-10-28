@@ -24,7 +24,7 @@ class Article extends Model
         $query = "SELECT *, (SELECT `name` FROM `categories` WHERE `categories`.`id` = `articles`.`cat_id`) AS `category` FROM `articles` WHERE `id` = ? LIMIT 1;";
         try {
             $stmt = $this->query($query, [$id]);
-            $result = $stmt ? $stmt->fetch() : null;
+            $result = $stmt?->fetch();
         } catch (PDOException $e) {
             error_log("Database error in find(): " . $e->getMessage());
             $result = null;
