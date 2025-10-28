@@ -11,7 +11,7 @@
         <section class="col-md-4">
             <h2><?php echo $article['title'];?></h2>
             <p><?php echo $article['body'];?></p>
-            <p><a class="btn btn-primary" href="<?php $this->url('home/show/' .$article['id']);?>" role="button">View details »</a></p>
+            <p><a class="btn btn-primary" href="<?php $this->url('home/show/' .$article['id']);?>" role="button">View details</a></p>
         </section>
     </section>
     <?php }?>
